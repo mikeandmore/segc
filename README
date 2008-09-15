@@ -1,0 +1,24 @@
+========INSTALL========
+just like other python package.
+
+1 untar it.
+2 ./setup.py build
+3 sudo ./setup.py install
+
+========USE========
+from segc import *
+
+s = Segc()
+s.load_words('../dics/words.dic')
+s.load_chars('../dics/chars.dic')
+
+a = s.create_algorithm()
+
+text = '你好，我的名字叫Mike，这个是我的小作品。偶是个纯洁的小正太～～'
+
+for tok in a.xtokenize(text):
+    print tok,
+print
+
+========LICENSE========
+GPL-v3
