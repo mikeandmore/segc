@@ -15,7 +15,7 @@ text = '你好，我的名字叫Mike，这个是我的小作品。偶是个纯�
 
 a = s.create_algorithm(text)
 
-for tok in a.xtokenize(text):
+for tok in a.xtokenize():
     print tok,
 print
 

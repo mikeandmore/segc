@@ -72,7 +72,8 @@ class Algorithm(object):
             text = text[s:]
         return t
 
-    def xtokenize(self, text):
+    def xtokenize(self):
+        text = self._text
         while(True):
             s = self.next_token_size()
             if s == 0:
