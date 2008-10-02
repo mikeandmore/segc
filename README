@@ -9,12 +9,11 @@ just like other python package.
 from segc import *
 
 s = Segc()
-s.load_words('../dics/words.dic')
-s.load_chars('../dics/chars.dic')
-
-a = s.create_algorithm()
+s.load_dictionary('../dics/chars.dic', '../dics/words.dic')
 
 text = '你好，我的名字叫Mike，这个是我的小作品。偶是个纯洁的小正太～～'
+
+a = s.create_algorithm(text)
 
 for tok in a.xtokenize(text):
     print tok,

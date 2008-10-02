@@ -4,93 +4,139 @@
 #include "mempool.h"
 #include "algor.h"
 
-static PyObject*
-pydict_load_words(PyObject* self,
-                  PyObject* args)
+/**
+ * aquire_global_resources:
+ * @self: the python self object
+ * @args: the python arguments
+ *
+ * this function initialize all the static resource, thus
+ * is NOT thread safe!
+ *
+ * Returns: a Py_None
+ **/
+PyObject*
+acquire_global_resources(PyObject* self,
+                         PyObject* args)
 {
-    char* fn;
-    if(!PyArg_ParseTuple(args, "s", &fn))
-        return NULL;
+    const char* char_dict = NULL;
+    const char* word_dict = NULL;
 
-    dict_load_words(fn);
+    PyArg_ParseTuple(args, "ss", &char_dict, &word_dict);
+    pool_init();
+    dict_init();
+    dict_load_words(word_dict);
+    dict_load_chars(char_dict);
+
+    Py_INCREF(Py_None);
+
+    return Py_None;
+}
+
+/**
+ * free_global_resources:
+ * @self: the python self object
+ * @args: the python arguments
+ *
+ * release the static data aquired by
+ * aquire_global_resources(), like aquire_global_resources()
+ * it's not thread safe!
+ *
+ * Returns: a Py_None
+ **/
+PyObject*
+free_global_resources(PyObject* self,
+                      PyObject* args)
+{
+    dict_deinit();
+    pool_deinit();
 
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-static PyObject*
-pydict_load_chars(PyObject* self,
-                  PyObject* args)
+/**
+ * create_algor_object:
+ * @self: the python self object
+ * @args: the python arguments
+ *
+ * create the algorithm object containing the target string
+ * to split into chinese words, this method mainly allocate
+ * memory, so it's thread safe.
+ *
+ * Returns: a PyCObject containing a algor_t pointer
+ **/
+PyObject*
+create_algor_object(PyObject* self,
+                    PyObject* args)
 {
-    char* fn;
-    if(!PyArg_ParseTuple(args, "s", &fn))
-        return NULL;
+    const char* buf = NULL;
+    PyArg_ParseTuple(args, "s", &buf);
+    algor_t* al = algor_new(buf);
 
-    dict_load_chars(fn);
+    //this will create a new ref, so we don't have to incref
+    return PyCObject_FromVoidPtr(al, NULL);
+}
+
+/**
+ * destroy_algor_object:
+ * @self: the python self object
+ * @args: the python arguments
+ *
+ * destroy the algor object, it's thread safe
+ *
+ * Returns: a Py_None
+ **/
+PyObject*
+destroy_algor_object(PyObject* self,
+                     PyObject* args)
+{
+    PyObject* cobj = NULL;
+    PyArg_ParseTuple(args, "O", &cobj);
+
+    algor_t* al = PyCObject_AsVoidPtr(cobj);
+    algor_destroy(al);
 
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-static PyObject*
-pyalgo_next_token(PyObject* self,
-                  PyObject* args)
+/**
+ * get_algor_next_token:
+ * @self: the python self object
+ * @args: the python arguments
+ *
+ * parse the next token
+ *
+ * Returns: a int, but wrapped into python object
+ **/
+PyObject*
+get_algor_next_token(PyObject* self,
+                     PyObject* args)
 {
-    char* buf;
-    if(!PyArg_ParseTuple(args, "s", &buf))
-        return NULL;
-    size_t psize = complex_algo_next_token(buf);
-    return Py_BuildValue("i", psize);
+    PyObject* cobj = NULL;
+    PyArg_ParseTuple(args, "O", &cobj);
+
+    algor_t* al = PyCObject_AsVoidPtr(cobj);
+    size_t val =  algor_get_next_token(al);
+
+    return Py_BuildValue("i", val);
 }
 
-#define DEF_VOID_METHOD(name, content)       \
-    static PyObject*                         \
-    name(PyObject* self, PyObject* args)     \
-    {                                        \
-        content();                           \
-        Py_INCREF(Py_None);                  \
-        return Py_None;                      \
-    }                                        \
 
+/* modules methods */
+PyMethodDef methods[] =
+    {
+        {"acquire_global_resources", acquire_global_resources, METH_VARARGS},
+        {"free_global_resources", free_global_resources, METH_VARARGS},
+        {"create_algor_object", create_algor_object, METH_VARARGS},
+        {"destroy_algor_object", destroy_algor_object, METH_VARARGS},
+        {"get_algor_next_token", get_algor_next_token, METH_VARARGS},
+        {NULL, NULL},
+    };
 
-DEF_VOID_METHOD(pyalgo_init, complex_algo_init)
-DEF_VOID_METHOD(pyalgo_deinit, complex_algo_deinit)
-DEF_VOID_METHOD(pydict_init, dict_init)
-DEF_VOID_METHOD(pydict_deinit, dict_deinit)
-DEF_VOID_METHOD(pypool_init, pool_init)
-DEF_VOID_METHOD(pypool_deinit, pool_deinit)
-
-
-/*
- * Python module method defination
- */
-static PyMethodDef CSegcMethods[] =
-{
-    {"dict_load_words", pydict_load_words,
-     METH_VARARGS, "load words to the dict"},
-    {"dict_load_chars", pydict_load_chars,
-     METH_VARARGS, "load chars to the dict"},
-    {"algo_init",       pyalgo_init,
-     METH_VARARGS, "init the algorithm"},
-    {"algo_next_token", pyalgo_next_token,
-     METH_VARARGS, "get the next token"},
-    {"algo_deinit",     pyalgo_deinit,
-     METH_VARARGS, "deinit the algorithm"},
-    {"dict_init",       pydict_init,
-     METH_VARARGS, "init the dictionary"},
-    {"dict_deinit",     pydict_deinit,
-     METH_VARARGS, "deinit the dictionary"},
-    {"pool_init",       pypool_init,
-     METH_VARARGS, "init the memory pool"},
-    {"pool_deinit",     pypool_deinit,
-     METH_VARARGS, "free all the memory pool"},
-    {NULL, NULL, 0, NULL}
-};
-
-PyMODINIT_FUNC
+/* init the python module */
+void
 initcsegc()
 {
-    (void)Py_InitModule("csegc", CSegcMethods);
+    Py_InitModule("csegc", methods);
 }
-
-

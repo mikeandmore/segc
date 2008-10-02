@@ -6,10 +6,11 @@
 
 #define MAX_CHUNK_NUM 32
 
-void    complex_algo_init      ();
+typedef struct _algor_t algor_t;
 
-void    complex_algo_deinit    ();
+algor_t*       algor_new        (const char* target_string);
+void           algor_destroy    (algor_t*    al);
 
-size_t  complex_algo_next_token(const char* text);
+size_t         algor_get_next_token(algor_t* al);
 
 #endif /* _ALGOR_H_ */

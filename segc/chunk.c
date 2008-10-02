@@ -8,6 +8,7 @@ chunk_new_arr(word_t       w[],
               word_info_t* winfo[],
               size_t       n)
 {
+    //use malloc so that thread safe
     chunk_t* ch = malloc(sizeof(chunk_t));
     int i;
     ch->n = n;
