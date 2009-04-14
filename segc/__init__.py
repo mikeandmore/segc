@@ -6,6 +6,8 @@ import csegc
 import os
 import thread
 
+from cStringIO import StringIO
+
 """
 main class, wrapper to do some resource work
 """
@@ -62,24 +64,22 @@ class Algorithm(object):
         return csegc.get_algor_next_token(self._cobj)
 
     def tokenize(self):
-        text = self._text
+        io = StringIO(self._text)
         t = []
         while(True):
             s = self.next_token_size()
             if s == 0:
                 break
-            t.append(text[:s])
-            text = text[s:]
+            t.append(io.read(s))
         return t
 
     def xtokenize(self):
-        text = self._text
+        io = StringIO(self._text)
         while(True):
             s = self.next_token_size()
             if s == 0:
                 return
-            yield text[:s]
-            text = text[s:]
+            yield io.read(s)
     
     def __del__(self):
         csegc.destroy_algor_object(self._cobj)

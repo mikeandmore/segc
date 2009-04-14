@@ -15,7 +15,7 @@ static hash_table_t* root;
 #endif
 
 void
-dict_init()
+dict_init(void)
 {
 #ifdef AVLTREE
     root = NULL;
@@ -69,7 +69,7 @@ dict_load_chars(const char* filename)
 }
 
 void
-dict_deinit()
+dict_deinit(void)
 {
 #ifdef AVLTREE
     avltree_destroy(root);

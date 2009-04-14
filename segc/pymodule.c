@@ -136,7 +136,7 @@ PyMethodDef methods[] =
 
 /* init the python module */
 void
-initcsegc()
+initcsegc(void)
 {
     Py_InitModule("csegc", methods);
 }

@@ -3,7 +3,7 @@
 
 typedef struct _hash_table_t hash_table_t;
 
-hash_table_t*    hash_table_new        ();
+hash_table_t*    hash_table_new        (void);
 
 void             hash_table_destroy    (hash_table_t* table);
 

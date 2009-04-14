@@ -3,8 +3,8 @@
 
 #include "word.h"
 
-void      dict_init      ();
-void      dict_deinit    ();
+void      dict_init      (void);
+void      dict_deinit    (void);
 
 void      dict_load_words     (const char* filename);
 void      dict_load_chars     (const char* filename);

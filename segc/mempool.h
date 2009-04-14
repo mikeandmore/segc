@@ -12,8 +12,8 @@
 
 #define THRESHOULD_SIZE 512
 
-void         pool_init   ();
-void         pool_deinit ();
+void         pool_init   (void);
+void         pool_deinit (void);
 
 void*      pool_alloc  (size_t size);
 void         pool_free   (void* ptr);

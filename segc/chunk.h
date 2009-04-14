@@ -18,7 +18,7 @@ chunk_t*  chunk_new_arr          (word_t       w[],
                                   word_info_t* winfo[],
                                   size_t       n);
 
-chunk_t*  chunk_new              ();
+chunk_t*  chunk_new              (void);
 
 void      chunk_free             (chunk_t* ch);
 

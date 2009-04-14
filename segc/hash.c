@@ -93,7 +93,7 @@ rehash(hash_table_t* table)
 }
 
 hash_table_t*
-hash_table_new()
+hash_table_new(void)
 {
     hash_table_t* table = malloc(sizeof(hash_table_t));
     table->arr = malloc(sizeof(hash_entry_t*) * INIT_SIZE);

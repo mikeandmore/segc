@@ -39,6 +39,9 @@ main()
         /* strncpy(str, buf, psize); */
         /* str[psize] = 0; */
         /* printf("%s %d\n", str, psize); */
+        char str_word[64];
+        memset(str_word, 0, 64);
+        strncpy(str_word, buf, psize);
         buf += psize;
         n++;
     }

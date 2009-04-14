@@ -21,7 +21,7 @@ chunk_new_arr(word_t       w[],
 }
 
 chunk_t*
-chunk_new()
+chunk_new(void)
 {
     chunk_t* ch = malloc(sizeof(chunk_t));
     //memset(ch, 0, sizeof(chunk_t));
