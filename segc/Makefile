@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-O3 -Wall -ffast-math -march=prescott -mfpmath=sse
-#CFLAGS=-march=native -mtune=native -O3 -pipe -ffast-math -mfpmath=sse
+#CFLAGS=-O3 -Wall -march=prescott -mfpmath=sse
+CFLAGS=-march=native -mtune=native -O3 -pipe -fomit-frame-pointer -mfpmath=sse
 PYTHON_CFLAGS=`python-config --cflags`
 PYTHON_LDFLAGS=`python-config --libs`
 
@@ -18,7 +18,7 @@ OBJS= \
 all: link
 
 test: link
-	$(CC) test.c -c
+	$(CC) $(CFLAGS) test.c -c
 	$(CC) $(OBJS) $(PYTHON_LDFLAGS) test.o -o test
 
 link: $(OBJS)

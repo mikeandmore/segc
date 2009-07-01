@@ -38,6 +38,7 @@ struct _algor_t
     size_t       current_cache_pos;
     
     const char*  target_string;
+    chunk_t*     temp_chunk;
 };
 
 algor_t*
@@ -56,6 +57,7 @@ algor_new(const char* target_string)
     al->current_cache_pos = -1;
 
     al->target_string = target_string;
+    al->temp_chunk = chunk_new();
     return al;
 }
 
@@ -65,6 +67,7 @@ algor_destroy(algor_t* al)
     int i;
     for(i = 0; i < MAX_CHUNK_NUM; i++)
         chunk_free(al->current_chunks[i]);
+    chunk_free(al->temp_chunk);
     free(al);
 }
 
@@ -124,9 +127,9 @@ match_word_to_cache(algor_t* al,
 static void
 search_chunks(algor_t*    al,
               const char* text,
-              size_t      step,
-              chunk_t*    ch)
+              size_t      step)
 {
+    chunk_t* ch = al->temp_chunk;
     if(step == CHUNK_WORD_SIZE)
         goto push_cur;
     else
@@ -151,7 +154,7 @@ search_chunks(algor_t*    al,
             ch->w[step][info->nbytes] = 0;
             ch->winfo[step] = info;
             ch->n = step + 1;
-            search_chunks(al, text + info->nbytes, step + 1, ch);
+            search_chunks(al, text + info->nbytes, step + 1);
         }
     }
     return;
@@ -169,9 +172,7 @@ refresh_chunks(algor_t* al)
     //start again
     al->current_chunks_size = 0;
     //search all the chunks
-    chunk_t* tmp_ch = chunk_new();
-    search_chunks(al, text, 0, tmp_ch);
-    chunk_free(tmp_ch);
+    search_chunks(al, text, 0);
 
     chunk_t* free_list[MAX_CHUNK_NUM];
     memcpy(free_list, al->current_chunks, sizeof(chunk_t*) * MAX_CHUNK_NUM);

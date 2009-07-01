@@ -15,7 +15,6 @@ main()
     dict_init();
     dict_load_words("../dics/words.dic");
     dict_load_chars("../dics/chars.dic");
-
     FILE* fp = fopen("input.txt", "r");
     if(!fp)
     {
@@ -33,6 +32,7 @@ main()
     clock_t s = clock();
     size_t n = 0;
     size_t psize = 0;
+    FILE* fout = fopen("output.txt", "w");
     while((psize = algor_get_next_token(algo)))
     {
         /* char str[psize + 1]; */
@@ -40,11 +40,14 @@ main()
         /* str[psize] = 0; */
         /* printf("%s %d\n", str, psize); */
         char str_word[64];
-        memset(str_word, 0, 64);
         strncpy(str_word, buf, psize);
+        str_word[psize] = ' ';
+        str_word[psize + 1] = 0;
+        fwrite(str_word, psize + 2, 1, fout);
         buf += psize;
         n++;
     }
+    fclose(fout);
     printf("finished %d words in %ld ms\n", n, (clock() - s) / 1000);
     printf("%d\n", buf - str);
     algor_destroy(algo);
