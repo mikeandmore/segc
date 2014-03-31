@@ -11,7 +11,7 @@ from segc import *
 s = Segc()
 s.load_dictionary('../dics/chars.dic', '../dics/words.dic')
 
-text = '你好，我的名字叫Mike，这个是我的小作品。偶是个纯洁的小正太～～'
+text = '你好，我的名字叫Mike.'
 
 a = s.create_algorithm(text)
 
